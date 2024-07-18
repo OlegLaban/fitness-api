@@ -37,3 +37,13 @@ func HandleUpdateUser(c echo.Context) error {
 
 	return c.JSON(http.StatusOK, updatedUser)
 }
+
+func HandleGetUsers(c echo.Context) error {
+	users, err := repositories.UserList()
+
+	if err != nil {
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	return c.JSON(http.StatusOK, users)
+}

@@ -1,11 +1,14 @@
 package repositories
 
 import (
+	"context"
 	"fitness-api/cmd/models"
 	"fitness-api/cmd/storage"
 	"time"
 )
-
+var (
+	ctx context.Context
+)
 func CreateUser(user models.User) (models.User, error) {
 	db := storage.GetDB()
 	sqlStatement := `INSERT INTO users (name, email, password, created_at, updated_at) VALUES($1, $2, $3, $4, $5) RETURNING id`
@@ -28,4 +31,24 @@ func UpdateUser(user models.User, id int) (models.User, error) {
 	}
 	user.Id = id
 	return user, nil
+}
+
+func UserList() ([]models.User, error) {
+	db := storage.GetDB()
+	rows, err := db.Query("SELECT id, name, email, password, created_at, updated_at FROM users;")
+	users := make([]models.User, 0)
+	if err != nil {
+		return users, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var user models.User
+		if err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.CreatedAt, &user.UpdatedAt); err != nil {
+			return users, err
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
 }
