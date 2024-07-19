@@ -16,11 +16,10 @@ func main() {
 	storage.InitDB()
 	e.POST("/token", handlers.Auth)
 	e.POST("/users", handlers.CreateUser)
-	e.Use(auth)
-	e.POST("/measurements", handlers.CreateMeasurement)
-	e.PUT("/users/:id", handlers.HandleUpdateUser)
-	e.PUT("/measurements/:id", handlers.HandleUpdateMeasurement)
-	e.GET("/users", handlers.HandleGetUsers)
+	e.POST("/measurements", handlers.CreateMeasurement, auth)
+	e.PUT("/users/:id", handlers.HandleUpdateUser, auth)
+	e.PUT("/measurements/:id", handlers.HandleUpdateMeasurement, auth)
+	e.GET("/users", handlers.HandleGetUsers, auth)
 
 	e.Logger.Fatal(e.Start(":8081"))
 }

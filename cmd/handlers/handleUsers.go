@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fitness-api/cmd/models"
 	"fitness-api/cmd/repositories"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -13,7 +12,7 @@ import (
 )
 
 type TokenRequest struct {
-	Email string `json:"email"`
+	Email    string `json:"email"`
 	Password string `json:"password"`
 }
 
@@ -22,7 +21,7 @@ func CreateUser(c echo.Context) error {
 	user := models.User{}
 	c.Bind(&user)
 
-	err = hashPassword(&user.Password);
+	err = hashPassword(&user.Password)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, err.Error())
@@ -64,14 +63,14 @@ func HandleGetUsers(c echo.Context) error {
 	return c.JSON(http.StatusOK, users)
 }
 
-func hashPassword(password *string) (error) {
+func hashPassword(password *string) error {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(*password), 14)
 	*password = string(bytes)
 
 	if err != nil {
 		return err
 	}
-	
+
 	return nil
 }
 
@@ -104,8 +103,6 @@ func Auth(c echo.Context) error {
 }
 
 func CheckPassword(user models.User, providerPassword string) error {
-	fmt.Println(user.Password)
-	fmt.Println(providerPassword)
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(providerPassword))
 
 	if err != nil {
