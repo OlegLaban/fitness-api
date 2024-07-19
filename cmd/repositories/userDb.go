@@ -52,3 +52,21 @@ func UserList() ([]models.User, error) {
 
 	return users, nil
 }
+
+func GetByEmail(email string) (models.User, error) {
+	db := storage.GetDB()
+	rows, err := db.Query("SELECT id, name, email, password, created_at, updated_at FROM users WHERE email = $1;", email)
+	user := models.User{}
+	if err != nil {
+		return user, err
+	}
+	defer rows.Close()
+	
+	for rows.Next() {
+		if err := rows.Scan(&user.Id, &user.Name, &user.Email, &user.Password, &user.CreatedAt, &user.UpdatedAt); err != nil {
+			return user, err
+		}
+	}
+
+	return user, nil
+}
